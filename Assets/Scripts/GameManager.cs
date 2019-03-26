@@ -8,11 +8,12 @@ using Photon.Realtime;
 public class GameManager : MonoBehaviourPunCallbacks
 {
 
+    public static GameManager Instance;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        Instance = this;
     }
 
     public override void OnLeftRoom()
