@@ -24,6 +24,7 @@ public class CircleDropper : MonoBehaviourPunCallbacks
         photonView.RPC("NetworkedColorChange", RpcTarget.All);
     }
 
+    [PunRPC]
     private void NetworkedColorChange()
     {
         Color color;
