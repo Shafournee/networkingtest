@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
-public class CircleDropper : MonoBehaviour
+public class CircleDropper : MonoBehaviourPunCallbacks
 {
-    [SerializeField] GameObject layoutGroup;
 
     // Start is called before the first frame update
     void Start()
@@ -19,9 +19,22 @@ public class CircleDropper : MonoBehaviour
         
     }
 
-    public void colorize(GameObject slot)
+    public void colorize()
     {
-        Color color = Color.white;
-        slot.GetComponent<Image>().color = color;
+        photonView.RPC("NetworkedColorChange", RpcTarget.All);
+    }
+
+    private void NetworkedColorChange()
+    {
+        Color color;
+        if (photonView.IsMine)
+        {
+            color = Color.red;
+        }
+        else
+        {
+            color = Color.black;
+        }
+        GetComponent<Image>().color = color;
     }
 }

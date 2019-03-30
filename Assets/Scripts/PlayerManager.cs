@@ -13,13 +13,17 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             // We own this player, send the others our data
             stream.SendNext(IsFiring);
+            stream.SendNext(Health);
         }
         else
         {
             // Network player, recieve data
             this.IsFiring = (bool)stream.ReceiveNext();
+            this.Health = (float)stream.ReceiveNext();
         }
     }
+
+    public static GameObject LocalPlayerInstance;
 
     [Tooltip("The Beams GameObject to control")]
     [SerializeField]
@@ -40,6 +44,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             beams.SetActive(false);
         }
+        if(photonView.IsMine)
+        {
+            PlayerManager.LocalPlayerInstance = gameObject;
+        }
+
+        DontDestroyOnLoad(gameObject);
     }
 
     // Start is called before the first frame update
@@ -77,6 +87,27 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             GameManager.Instance.LeaveRoom();
         }
+    }
+
+    void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode loadingMode)
+    {
+        this.CalledOnLevelWasLoaded(scene.buildIndex);
+    }
+
+    void CalledOnLevelWasLoaded(int level)
+    {
+        // check if we are outside the Arena and if it's the case, spawn around the center of the arena in a safe zone
+        if (!Physics.Raycast(transform.position, -Vector3.up, 5f))
+        {
+            transform.position = new Vector3(0f, 5f, 0f);
+        }
+    }
+
+    public override void OnDisable()
+    {
+        // Always call the base to remove callbacks
+        base.OnDisable();
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     void ProcessInputs()
