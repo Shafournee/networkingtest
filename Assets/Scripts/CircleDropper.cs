@@ -7,6 +7,8 @@ using Photon.Pun;
 public class CircleDropper : MonoBehaviourPunCallbacks
 {
 
+    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,15 +29,7 @@ public class CircleDropper : MonoBehaviourPunCallbacks
     [PunRPC]
     private void NetworkedColorChange()
     {
-        Color color;
-        if (photonView.IsMine)
-        {
-            color = Color.red;
-        }
-        else
-        {
-            color = Color.black;
-        }
+        Color color = PlayerInfo.localPlayer.playerColor;
         GetComponent<Image>().color = color;
     }
 }
