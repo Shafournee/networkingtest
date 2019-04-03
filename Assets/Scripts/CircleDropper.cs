@@ -23,12 +23,27 @@ public class CircleDropper : MonoBehaviourPunCallbacks
 
     public void colorize()
     {
-        photonView.RPC("NetworkedColorChange", RpcTarget.All, PlayerInfo.localPlayer.playerColor.r, PlayerInfo.localPlayer.playerColor.g, PlayerInfo.localPlayer.playerColor.b);
+        if(PlayerInfo.localPlayer.isActivePlayer)
+            photonView.RPC("NetworkedColorChange", RpcTarget.All, PlayerInfo.localPlayer.playerColor.r, PlayerInfo.localPlayer.playerColor.g, PlayerInfo.localPlayer.playerColor.b);
     }
 
     [PunRPC]
-    private void NetworkedColorChange(float r, float g, float b)
+    private void NetworkedColorChange(float r, float g, float b, PhotonMessageInfo info)
     {
+        int sendersViewID = (int)info.Sender.CustomProperties["viewID"];
+        foreach (Photon.Realtime.Player player in PhotonNetwork.PlayerList)
+        {
+            if(sendersViewID == (int)player.CustomProperties["viewID"])
+            {
+                PhotonView.Find(sendersViewID).GetComponent<PlayerInfo>().isActivePlayer = false;
+            }
+            else
+            {
+                PhotonView.Find((int)player.CustomProperties["viewID"]).GetComponent<PlayerInfo>().isActivePlayer = true;
+            }
+        }
+        
         GetComponent<Image>().color = new Color(r, g, b);
+
     }
 }

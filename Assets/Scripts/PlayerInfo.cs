@@ -8,11 +8,17 @@ public class PlayerInfo : MonoBehaviourPunCallbacks
     public static PlayerInfo localPlayer;
     public Color playerColor;
 
+    public bool isActivePlayer;
+
     private void Awake()
     {
         if(photonView.IsMine)
         {
             localPlayer = this;
+        }
+        if(PhotonNetwork.IsMasterClient)
+        {
+            isActivePlayer = true;
         }
     }
 
