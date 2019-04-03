@@ -78,8 +78,23 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+        // On joined room is called client side, when this client joins the room
+        // IT IS NOT CALLED ON ALL CLIENTS
 
-        PhotonNetwork.LoadLevel("Gameplay");
+        Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+        
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        // The player joining the room does not appear to call this function
+        Debug.Log("Launcher: OnPlayerEnteredRoom called by PUN: Master client should call load level");
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                PhotonNetwork.LoadLevel("Gameplay");
+            }
+        }
     }
 }
